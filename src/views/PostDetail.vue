@@ -11,9 +11,10 @@
     </ul>
 
     <form @submit.prevent="createComment">
-      <input v-model="newComment" placeholder="Add a comment..." />
+      <input v-model="newComment" placeholder="Add a comment..." required />
       <button type="submit">Add Comment</button>
     </form>
+
     <router-link to="/posts">⬅ Back to Posts</router-link>
   </div>
 </template>
@@ -27,20 +28,27 @@ const route = useRoute();
 const post = ref({ comments: [] });
 const newComment = ref("");
 
+// Load post + comments
 const loadPost = async () => {
-  const response = await api.get(`/posts/${route.params.id}`);
-  post.value = response.data;
+  try {
+    const response = await api.get(`/posts/${route.params.id}`);
+    post.value = response.data;
+  } catch (err) {
+    console.error("Error loading post:", err);
+  }
 };
 
+// Create new comment
 const createComment = async () => {
+  if (!newComment.value.trim()) return;
   try {
     await api.post(`/posts/${route.params.id}/comments`, {
       comment: { content: newComment.value }
     });
     newComment.value = "";
-    await loadPost(); // ✅ reload to show latest
+    await loadPost(); // refresh post with new comments
   } catch (err) {
-    console.error("Error creating comment:", err);
+    console.error("Error creating comment:", err.response?.data || err);
   }
 };
 

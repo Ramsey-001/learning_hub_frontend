@@ -10,7 +10,9 @@
     <!-- Post list -->
     <ul>
       <li v-for="p in posts" :key="p.id">
-        {{ p.title }} - {{ p.content }}
+        <!-- Make title a link to post detail -->
+        <router-link :to="`/posts/${p.id}`">{{ p.title }}</router-link>
+        - {{ p.content }}
         <button @click="deletePost(p.id)">Delete</button>
       </li>
     </ul>
@@ -23,7 +25,7 @@ import api from "../api";
 
 const posts = ref([]);
 
-// Load all posts on mount
+// Load all posts
 onMounted(async () => {
   try {
     const res = await api.get("/posts");
@@ -33,7 +35,7 @@ onMounted(async () => {
   }
 });
 
-// Delete a post
+// Delete post
 const deletePost = async (id) => {
   try {
     await api.delete(`/posts/${id}`);
