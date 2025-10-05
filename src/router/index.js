@@ -5,6 +5,7 @@ import Posts from '../views/Posts.vue'
 import NewPost from '../views/NewPost.vue'
 import PostDetail from '../views/PostDetail.vue'
 import Register from '../views/Register.vue'
+import AboutView from '../views/AboutView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,39 +13,40 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView,
+      component: HomeView
     },
     { 
       path: '/login',
-      name: 'Login', 
-      component: Login },
+      name: 'login', 
+      component: Login 
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: Register
+    },
     {
       path: '/posts',
-      name: 'Posts',
+      name: 'posts',
       component: Posts
     },
     { 
-      path:'/posts/new',
-       
+      path: '/posts/new',
+      name: 'new-post',
       component: NewPost
     },
     {
-      path:'/posts/:id',
-      component: PostDetail
-    },
-    {
-      path:'/register',
-      component: Register
+      path: '/posts/:id',
+      name: 'post-detail',
+      component: PostDetail,
+      props: true
     },
     {
       path: '/about',
       name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
-    },
-  ],
+      component: AboutView
+    }
+  ]
 })
 
 export default router

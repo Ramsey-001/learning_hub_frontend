@@ -1,9 +1,10 @@
+
 <template>
   <div>
     <h1>{{ post.title }}</h1>
     <p>{{ post.content }}</p>
 
-    <h3>Comments</h3>
+    <h3>{{ $t('comments') }}</h3>
     <ul>
       <li v-for="comment in post.comments" :key="comment.id">
         <strong>{{ comment.user.email }}:</strong> {{ comment.content }}
@@ -11,46 +12,41 @@
     </ul>
 
     <form @submit.prevent="createComment">
-      <input v-model="newComment" placeholder="Add a comment..." required />
-      <button type="submit">Add Comment</button>
+      <input v-model="newComment" :placeholder="$t('addComment')" />
+      <button type="submit">{{ $t('addComment') }}</button>
     </form>
 
-    <router-link to="/posts">⬅ Back to Posts</router-link>
+    <router-link to="/posts">{{ $t('backToPosts') }}</router-link>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
+import { useI18n } from "vue-i18n";
 import api from "../api";
 
 const route = useRoute();
-const post = ref({ comments: [] });
+const { locale } = useI18n();
+const post = ref({});
 const newComment = ref("");
 
-// Load post + comments
+// Load post details
 const loadPost = async () => {
-  try {
-    const response = await api.get(`/posts/${route.params.id}`);
-    post.value = response.data;
-  } catch (err) {
-    console.error("Error loading post:", err);
-  }
+  const res = await api.get(`/posts/${route.params.id}`);
+  post.value = res.data;
 };
 
 // Create new comment
 const createComment = async () => {
   if (!newComment.value.trim()) return;
-  try {
-    await api.post(`/posts/${route.params.id}/comments`, {
-      comment: { content: newComment.value }
-    });
-    newComment.value = "";
-    await loadPost(); // refresh post with new comments
-  } catch (err) {
-    console.error("Error creating comment:", err.response?.data || err);
-  }
+  await api.post(`/posts/${route.params.id}/comments`, {
+    content: newComment.value,
+  });
+  newComment.value = "";
+  await loadPost();
 };
 
 onMounted(loadPost);
 </script>
+

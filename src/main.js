@@ -1,24 +1,17 @@
 import './assets/main.css'
-
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import { createRouter, createWebHistory} from "vue-router"
-
 import App from './App.vue'
 import router from './router'
-import Login from "./views/Login.vue"
-import Posts from "./views/Posts.vue"
+import { i18n } from './i18n'
 
+// Create the Vue app instance only once
 const app = createApp(App)
 
-const routes = [
-  { path: "/", component: Login },
-  { path: "/posts", component: Posts}
-];
-
-
-
+// Register global plugins
 app.use(createPinia())
 app.use(router)
+app.use(i18n)
 
+// Mount the app to the #app element
 app.mount('#app')

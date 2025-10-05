@@ -1,47 +1,50 @@
 <template>
   <div>
-    <h2>Posts</h2>
+    <h2>{{ $t('posts') }}</h2>
 
-    <!-- Link to new post page -->
     <router-link to="/posts/new">
-      <button>Add New Post</button>
+      <button>{{ $t('addNewPost') }}</button>
     </router-link>
 
-    <!-- Post list -->
     <ul>
-      <li v-for="p in posts" :key="p.id">
-        <!-- Make title a link to post detail -->
-        <router-link :to="`/posts/${p.id}`">{{ p.title }}</router-link>
-        - {{ p.content }}
-        <button @click="deletePost(p.id)">Delete</button>
+      <li v-for="p in translatedPosts" :key="p.id">
+        <router-link :to="`/posts/${p.id}`">
+          {{ p.title }}
+        </router-link>
+        <p>{{ p.content }}</p>
       </li>
     </ul>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import api from "../api";
+//import { translateText } from "../utils/translate";
 
 const posts = ref([]);
+const translatedPosts = ref([]);
+const { locale } = useI18n();
 
-// Load all posts
-onMounted(async () => {
-  try {
-    const res = await api.get("/posts");
-    posts.value = res.data;
-  } catch (err) {
-    console.error("Error loading posts", err);
-  }
-});
-
-// Delete post
-const deletePost = async (id) => {
-  try {
-    await api.delete(`/posts/${id}`);
-    posts.value = posts.value.filter((p) => p.id !== id);
-  } catch (err) {
-    console.error("Error deleting post", err);
-  }
+// Load posts from backend
+const loadPosts = async () => {
+  const res = await api.get("/posts");
+  posts.value = res.data;
+  await translatePosts();
 };
+
+// Translate posts when language changes
+// Translate posts when language changes
+const translatePosts = async () => {
+  translatedPosts.value = posts.value.map((post) => ({
+    ...post,
+    title: post.title,
+    content: post.content,
+  }));
+};
+
+
+onMounted(loadPosts);
+watch(locale, translatePosts); // retranslate when language changes
 </script>
