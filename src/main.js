@@ -4,6 +4,8 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import { i18n } from './i18n'
+import './assets/main.css'
+
 
 // Create the Vue app instance only once
 const app = createApp(App)
